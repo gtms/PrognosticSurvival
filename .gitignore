@@ -1,0 +1,15 @@
+## directories
+cache/
+config/
+graphs/
+
+## files
+.Rhistory
+*.Rda
+*.pdf
+*.aux
+*.log
+*.tex
+*.out
+*.el
+*.org
