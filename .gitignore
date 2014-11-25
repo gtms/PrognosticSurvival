@@ -9,8 +9,8 @@ graphs/
 *.pdf
 *.aux
 *.log
-*.tex
 *.out
 *.el
 *.org
 *.gmt
+*.toc
