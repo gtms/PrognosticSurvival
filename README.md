@@ -89,7 +89,7 @@ file.  With the original configuration, these tasks include:
       cached, you may find it desirable to turn the `munging` flag off and the
       `cache_loading` flag on.  This will allow for direct access to
       pre-processed data on your working environment once `load.project ()` is
-      executed on a new R session.
+      executed on later R sessions.
     - _Raw data_
 
       Raw data can be found in the `data` directory.  The `csv` directory contains the
