@@ -92,12 +92,14 @@ file.  With the original configuration, these tasks include:
       executed on later R sessions.
     - _Raw data_
 
-      Raw data can be found in the `data` directory.  The `csv` directory contains the
-      file `studies.csv`, which has information about all data-sets analyzed in this
-      study.  The `rda` directory contains all data-sets stored on disk as `Rda`
-      files.  The `sigs` directory contains biologically motivated gene expression
-      signatures in `Rda` format, plus the 4722 MSigDB curated gene sets (collection
-      v4.0, updated on May 31, 2013) in the `gmt` format.
+      Raw data can be found in the `data` directory.  The `csv` directory
+      contains the file `studies.csv`, which has information about all data-sets
+      analyzed in this study.  The `rda` directory contains all data-sets stored
+      on disk as `Rda` files.  The `sigs` directory contains biologically
+      motivated gene expression signatures in `Rda` format, plus the 4722 MSigDB
+      curated gene sets (collection v4.0, updated on May 31, 2013), as
+      downloaded from <http://www.broadinstitute.org/gsea/msigdb>, in the `gmt`
+      format.
     - _Pre-processed data_
 
       Pre-processed data, or cached data, can be found in the `cache` directory as
