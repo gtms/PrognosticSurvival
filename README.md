@@ -1,6 +1,8 @@
 # Supplementary Code
-This project contains supplementary code supporting the analysis reported in the
-article "Pervasive prognostic signals in the cancer transcriptome or why association with outcome is not biologically informative"
+
+This directory tree contains supplementary code supporting the analysis reported
+in the article "Pervasive prognostic signals in the cancer transcriptome or why
+association with outcome is not biologically informative"
 
 Author: Gil Tomás <gil.tomas@ulb.ac.be>
 
@@ -108,6 +110,15 @@ file.  With the original configuration, these tasks include:
     - _Pre-processing scripts_
 
       Pre-processing scripts are located in the `munge` directory.
+    - _Processing scripts_
+
+      Processing scripts, carrying for the core of the analysis and producing
+      its final graphical output, are located in the `src` directory.
+    - _Supplementary Methods_
+
+      Source `tex` files for the *Supplementary Methods* documentation can be
+      found in the `reports` directory.  Upon processing with `pdflatex`, the
+      corresponding `pdf` files will be located in the same directory.
     - The remaining directories should be self-explanatory.
 
 * Output file types
@@ -122,5 +133,5 @@ file.  With the original configuration, these tasks include:
     - `*.Rda`
 
       These are binary files storing pre-processed intermediate results that can
-      be further scrutinized should the user decide to fine-tune the analysis or
+      be further scrutinized, should the user decide to fine-tune the analysis or
       push it in another direction.
