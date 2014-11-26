@@ -1,8 +1,9 @@
-# Supplementary code for the paper 'Pervasive prognostic signals in the cancer
-# transcriptome or why association with outcome is not biologically informative'
-
+# Supplementary Code
+This project contains supplementary code supporting the analysis reported in the
+article "Pervasive prognostic signals in the cancer transcriptome or why association with outcome is not biologically informative"
 
 Author: Gil Tomás <gil.tomas@ulb.ac.be>
+
 URL: <https://owncloud.ulb.ac.be/public.php?service=files&t=506a90a16b44d0e8050f2e991b70c7d8>
 
 
@@ -68,14 +69,16 @@ Once the second line of code is evaluated, a series of automated tasks will be
 executed depending on the configurations declared in the `config/global.dcf`
 file.  With the original configuration, these tasks include:
 * Loading any R packages listed in the configuration file.
-* Reading in any datasets stored in `data` or `cache`.
-* Preprocessing the data using the files in the `munge` directory.
+* Reading relevant datasets stored in `data` or `cache`.
+* Pre-processing the data using the files in the `munge` directory.
+* Executing the analysis of pre-processed data, yielding graphical output data.
 
 
 ## 4. Where things are
 
 * Directories
-    - *Configuration files*
+    - _Configuration files_
+
       The analysis work-flow followed by ProjectTemplate is determined by the
       configuration flags found in the `config/global.dcf` file.  Depending on the
       `TRUE/FALSE` status of these flags, the function `load.project ()` may load
@@ -86,29 +89,35 @@ file.  With the original configuration, these tasks include:
       find it desirable to turn the `munging` flag off and the `cache_loading` flag
       on, for direct access to pre-processed data once `load.project ()` is executed
       on a new R session
-    - *Raw data*
+    - _Raw data_
+
       Raw data can be found in the `data` directory.  The `csv` directory contains the
       file `studies.csv`, which has information about all data-sets analyzed in this
       study.  The `rda` directory contains all data-sets stored on disk as `Rda`
       files.  The `sigs` directory contains biologically motivated gene expression
       signatures in `Rda` format, plus the 4722 MSigDB curated gene sets (collection
       v4.0, updated on May 31, 2013) in the `gmt` format.
-    - *Pre-processed data*
+    - _Pre-processed data_
+
       Pre-processed data, or cached data, can be found in the `cache` directory as
       `Rda` files.  These are the output of the processing of raw data with scripts
       located in the `munge` directory.
-    - *Pre-processing scripts*
+    - _Pre-processing scripts_
+
       Pre-processing scripts are located in the `munge` directory.
     - The remaining directories should be self-explanatory.
 
 * Output file types
     - `*.Rout`
+
       These are run logs, i.e. records of a particular computation run by a
       script.  These include non-graphical intermediate results, values of the
       random number generator seeds, and software package versions.
     - `*.pdf`
+
       These are graphical outputs.
     - `*.Rda`
+
       These are binary files storing pre-processed intermediate results that can
       be further scrutinized should the user decide to fine-tune the analysis or
       push it in another direction.
