@@ -6,6 +6,7 @@ graphs/
 ## files
 .Rhistory
 *.Rda
+*.Rout
 *.pdf
 *.aux
 *.log
