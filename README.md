@@ -1,0 +1,114 @@
+# Supplementary code for the paper 'Pervasive prognostic signals in the cancer
+# transcriptome or why association with outcome is not biologically informative'
+
+
+Author: Gil Tomás <gil.tomas@ulb.ac.be>
+URL: <https://owncloud.ulb.ac.be/public.php?service=files&t=506a90a16b44d0e8050f2e991b70c7d8>
+
+
+## Contents
+1. Preliminaries and license
+2. Install
+3. Run the analysis
+4. Where things are
+
+
+## 1. Preliminaries and license
+
+The execution of this code requires a LINUX/UNIX environment with a working R
+(version>=3.0) and TeX installations.  Its sole intent is to support the
+findings reported in the quoted article.
+
+This file is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This file is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this file.  If not, see <http://www.gnu.org/licenses/>.
+
+
+## 2. Install
+
+Prior requirements to the running of this software include a working R
+(version>=3.0) and TeX installations.  Furthermore, R packages described in the
+file `config/global.dcf` are also expected to be found in your system.  In
+addition, the CRAN R package ProjectTemplate (version>=0.6) and
+MicroarrayToolbox (available on <http://github.com/gtms/MicroarrayToolbox>) must
+also be installed.
+
+An R script located on `lib/install-packages.R` can be executed to fill in these
+requirements.  On a bash command line, enter:
+
+```bash
+R CMD BATCH lib/install-packages.R
+```
+
+
+## 3. Run the analysis
+
+This project runs within the R ProjectTemplate framework for automated data
+analysis (<http://projecttemplate.net>).
+
+Launch R at the root directory of the project, where this README.md file is
+located, or set the working directory with the `setwd ()` command.
+
+Then you need to run the following two lines of R code:
+
+```R
+library ("ProjectTemplate")
+load.project ()
+```
+
+Once the second line of code is evaluated, a series of automated tasks will be
+executed depending on the configurations declared in the `config/global.dcf`
+file.  With the original configuration, these tasks include:
+* Loading any R packages listed in the configuration file.
+* Reading in any datasets stored in `data` or `cache`.
+* Preprocessing the data using the files in the `munge` directory.
+
+
+## 4. Where things are
+
+* Directories
+    - *Configuration files*
+      The analysis work-flow followed by ProjectTemplate is determined by the
+      configuration flags found in the `config/global.dcf` file.  Depending on the
+      `TRUE/FALSE` status of these flags, the function `load.project ()` may load
+      raw data into memory (flag `data_loading`), load pre-processed data into
+      memory (flag `cache_loading`), pre-process raw data (flag `munging`) and load
+      pre-determined libraries into memory (flag `load_libraries`).  For instance,
+      once the raw data has been initially pre-processed and cached, the user may
+      find it desirable to turn the `munging` flag off and the `cache_loading` flag
+      on, for direct access to pre-processed data once `load.project ()` is executed
+      on a new R session
+    - *Raw data*
+      Raw data can be found in the `data` directory.  The `csv` directory contains the
+      file `studies.csv`, which has information about all data-sets analyzed in this
+      study.  The `rda` directory contains all data-sets stored on disk as `Rda`
+      files.  The `sigs` directory contains biologically motivated gene expression
+      signatures in `Rda` format, plus the 4722 MSigDB curated gene sets (collection
+      v4.0, updated on May 31, 2013) in the `gmt` format.
+    - *Pre-processed data*
+      Pre-processed data, or cached data, can be found in the `cache` directory as
+      `Rda` files.  These are the output of the processing of raw data with scripts
+      located in the `munge` directory.
+    - *Pre-processing scripts*
+      Pre-processing scripts are located in the `munge` directory.
+    - The remaining directories should be self-explanatory.
+
+* Output file types
+    - `*.Rout`
+      These are run logs, i.e. records of a particular computation run by a
+      script.  These include non-graphical intermediate results, values of the
+      random number generator seeds, and software package versions.
+    - `*.pdf`
+      These are graphical outputs.
+    - `*.Rda`
+      These are binary files storing pre-processed intermediate results that can
+      be further scrutinized should the user decide to fine-tune the analysis or
+      push it in another direction.
