@@ -25,7 +25,7 @@ pkgs.dfr <- data.frame (pkg = c ("pcaMethods", "qvalue", "SNAGEE",
                             "amap", "survival", "doMC", "MASS", "stargazer"),
                         repos = c (rep ("bioc", 3), rep ("cran", 5)),
                         stringsAsFactors = FALSE)
-instant.pkgs (pkgs.dfr)
+instant.pkgs (pkgs.dfr, verbose = TRUE)
 
 ## quit
 sessionInfo ()
