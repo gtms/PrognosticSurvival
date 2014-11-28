@@ -2,7 +2,7 @@
 
 This directory tree contains supplementary code supporting the analysis reported
 in the article "Pervasive prognostic signals in the cancer transcriptome or why
-association with outcome is not biologically informative"
+association with outcome is not biologically informative".
 
 Author: Gil Tomás <gil.tomas@ulb.ac.be>
 
@@ -44,7 +44,7 @@ addition, the CRAN R package ProjectTemplate (version>=0.6) and
 MicroarrayToolbox (available on <http://github.com/gtms/MicroarrayToolbox>) must
 also be installed.
 
-An R script located on `lib/install-packages.R` can be executed to fill in these
+An R script located on `install/install-packages.R` can be executed to fill in these
 requirements.  On a bash command line, enter:
 
 ```bash
