@@ -83,15 +83,15 @@ file.  With the original configuration, these tasks include:
 
       The analysis work-flow followed by ProjectTemplate is determined by the
       configuration flags found in the `config/global.dcf` file.  Depending on
-      the `TRUE/FALSE` status of these flags, the function `load.project ()` may
-      load raw data into memory (flag `data_loading`), load pre-processed data
-      into memory (flag `cache_loading`), pre-process raw data (flag `munging`)
-      and load pre-determined libraries into memory (flag `load_libraries`).
-      For instance, once the raw data has been initially pre-processed and
-      cached, you may find it desirable to turn the `munging` flag off and the
-      `cache_loading` flag on.  This will allow for direct access to
-      pre-processed data on your working environment once `load.project ()` is
-      executed on later R sessions.
+      the `TRUE/FALSE` status of these flags, the function `load.project ()`
+      may: load raw data into memory (flag `data_loading`); load pre-processed
+      data into memory (flag `cache_loading`); pre-process raw data (flag
+      `munging`); and load pre-determined libraries into memory (flag
+      `load_libraries`).  For instance, once the raw data has been initially
+      pre-processed and cached, you may find it desirable to turn the `munging`
+      flag off and the `cache_loading` flag on.  This will allow for direct
+      access to pre-processed data on your working environment once
+      `load.project ()` is executed on later R sessions.
     - _Raw data_
 
       Raw data can be found in the `data` directory.  The `csv` directory
