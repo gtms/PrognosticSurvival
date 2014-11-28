@@ -48,7 +48,7 @@ An R script located on `lib/install-packages.R` can be executed to fill in these
 requirements.  On a bash command line, enter:
 
 ```bash
-R CMD BATCH lib/install-packages.R
+R CMD BATCH install/install-packages.R
 ```
 
 
