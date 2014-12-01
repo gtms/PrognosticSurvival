@@ -3,20 +3,23 @@
 
 binaryPC1Score <- function (gct,
                             sig,
-                            method = "svd",
-                            scale.matrix = FALSE,
+                            method = "svdImpute",
                             best.pc = FALSE,
-                            removeNAcolumns = FALSE) {
-    ## subsets gct with signature
+                            scale.matrix = FALSE) {
+    removeNAcolumns <- function (gct,
+                                 threshold = .1) { # minimum percentage of the
+                                        # genes profiled in order to
+                                        # retain the sample
+        idd <- with (gct, apply (data, 2, function (x) sum (!is.na (x)) <= threshold * nrow (data)))
+        list (gct = list (row.descriptions = gct$row.descriptions,
+                  data = gct$data[, !idd, drop = FALSE]),
+              rm.col = idd)
+    }
     gct <- subsetGCTwithSig (gct = gct,
                              sig = sig)
-    if (removeNAcolumns) {
-        pruned.gct <- removeNAcolumns (gct, threshold = 0)
-        gct <- pruned.gct$gct
-        rm.samples <- pruned.gct$rm.col
-    } else {
-        rm.samples <- rep (NA, ncol (gct$data))
-    }        
+    pruned.gct <- removeNAcolumns (gct, threshold = 0)
+    gct <- pruned.gct$gct
+    rm.samples <- pruned.gct$rm.col
     if (!is.matrix (gct$data)) {
         return ("None of the genes in the signature is profiled in the expression data.")
     }
