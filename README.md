@@ -2,7 +2,7 @@
 
 This directory tree contains supplementary code supporting the analysis reported
 in the article "Pervasive prognostic signals in the cancer transcriptome or why
-association with outcome is not biologically informative"
+association with outcome is not biologically informative".
 
 Author: Gil Tomás <gil.tomas@ulb.ac.be>
 
