@@ -10,13 +10,13 @@ URL: <https://owncloud.ulb.ac.be/public.php?service=files&t=506a90a16b44d0e8050f
 
 
 ## Contents
-1. Preliminaries and license
-2. Install
-3. Run the analysis
-4. Where things are
+* [Preliminaries and license](#preliminaries-and-license)
+* [Install](#install)
+* [Run the analysis](#run-the-analysis)
+* [Where things are](#where-things-are)
 
 
-## 1. Preliminaries and license
+## Preliminaries and license
 
 The execution of this code requires a LINUX/UNIX environment with a working R
 (version>=3.0) and TeX installations.  Its sole intent is to support the
@@ -35,7 +35,7 @@ You should have received a copy of the GNU General Public License along with
 this file.  If not, see <http://www.gnu.org/licenses/>.
 
 
-## 2. Install
+## Install
 
 Prior requirements to the running of this software include a working R
 (version>=3.0) and TeX installations.  Furthermore, R packages described in the
@@ -52,7 +52,7 @@ R CMD BATCH install/install-packages.R
 ```
 
 
-## 3. Run the analysis
+## Run the analysis
 
 This project runs within the R ProjectTemplate framework for automated data
 analysis (<http://projecttemplate.net>).
@@ -75,8 +75,7 @@ file.  With the original configuration, these tasks include:
 * Pre-processing the data using the files in the `munge` directory.
 * Executing the analysis of pre-processed data, yielding graphical output data.
 
-
-## 4. Where things are
+## Where things are
 
 * Directories
     - _Configuration files_
