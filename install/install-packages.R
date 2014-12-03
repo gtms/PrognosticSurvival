@@ -30,4 +30,3 @@ instant.pkgs (pkgs.dfr, verbose = TRUE)
 ## quit
 sessionInfo ()
 q (save = "no")
-
