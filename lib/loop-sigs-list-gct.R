@@ -1,4 +1,6 @@
 ## loopSigsListGCT
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## this is an internal of testMSigDBgct
 

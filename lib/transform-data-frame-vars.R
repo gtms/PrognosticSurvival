@@ -1,3 +1,7 @@
+## transformDataFrameVars
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## Takes data frame as input and, wherever sensible, transforms factor or
 ## character variables into numeric type.  Returns the transformed data frame.
 

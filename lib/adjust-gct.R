@@ -1,4 +1,6 @@
 ## adjustGCT
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## Performs deconvolution of one (univariate) or more (multivariate) variables,
 ## defined in var.dfr, on a per-gene basis across the expression matrix of a

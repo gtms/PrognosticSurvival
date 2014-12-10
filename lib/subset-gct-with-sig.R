@@ -1,4 +1,7 @@
 ## subsetGCTwithSig
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## subsets gct data with signatures's genes
 
 subsetGCTwithSig <- function (gct,

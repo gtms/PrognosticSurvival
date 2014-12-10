@@ -1,5 +1,16 @@
 ## binaryPC1Score
 ## defines a partition score method based on the first principal component
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
+## Given a gene expression matrix in the gct format (argument 'gct') and a gene
+## signature (argument 'sig), this function computes the first principal
+## component of the signature across the patient's cohort.  It then returns a
+## list containing: the loadings of each sample towards the first prinicpal
+## component (object 'continuous'); a binary vector bisecting the samples
+## according to the median value of the first principal component (object
+## 'discrete'); a logical vector describing which samples were removed from the
+## computation for not having enough genes profiled (object 'rm.samples').
 
 binaryPC1Score <- function (gct,
                             sig,

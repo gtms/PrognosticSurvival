@@ -1,4 +1,6 @@
 ## testMSigDBgct
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## Retrieves output of logrank tests for all MSigDB signatures, given a gct and
 ## an object of class survival.

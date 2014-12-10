@@ -1,13 +1,14 @@
 ## parsePheno
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
-## Bioconductor expression sets (eSet) may harbour a phenoData object
-## that contains information on experimental phenotypes recorded.  This object
-## can be accessed with the 'pData' method and yields a data frame containing a
-## number of clinical variables of interest in addition to other clinically
-## irrelevant information, coded as factors.  The 'parsePheno' function takes
-## this data frame as input and returns a cleaned data table, with the
-## clinically relevant variables adequately encoded as objects of class 'factor'
-## or 'numeric'.
+## Bioconductor expression sets (eSet) may harbour a phenoData object that
+## contains information on experimental phenotypes recorded.  This object can be
+## accessed with the 'pData' method and yields a data frame containing a number
+## of clinical variables of interest in addition to other clinically irrelevant
+## information, coded as factors.  The 'parsePheno' function takes this data
+## frame as input and returns a cleaned data table, with the clinically relevant
+## variables adequately encoded as objects of class 'factor' or 'numeric'.
 
 parsePheno <- function (dfr,
                         sep = ": ") {

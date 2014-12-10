@@ -1,4 +1,7 @@
 ## subsetGCTsamples
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## subsets gct's samples with a logical vector
 
 subsetGCTsamples <- function (gct,

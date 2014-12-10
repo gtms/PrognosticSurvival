@@ -1,3 +1,7 @@
+## filterNA
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## Given an object `obj' of class character or factor, replaces each of its
 ## instances matching `regexp' with NA, then returns `obj'.
 

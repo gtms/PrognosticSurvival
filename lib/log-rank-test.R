@@ -1,4 +1,6 @@
 ## logRankTest
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## fits a Cox proportional hazards regression model (logrank test), formulating
 ## survival (as given by 'surv.obj') as a function of 'score'

@@ -1,4 +1,6 @@
 ## adjustExpression
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## Performs deconvolution of one (univariate) or more (multivariate) variables,
 ## defined in var.dfr, on the expression of a given gene, defined by expr.  This

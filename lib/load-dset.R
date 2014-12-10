@@ -1,4 +1,7 @@
 ## loadDset
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## loads given study dataset into current environment
 
 loadDset <- function (study) {

@@ -1,4 +1,7 @@
 ## computeSuperIndex
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## computes super index from gct, given gene signature 
 
 computeSuperIndex <- function (gct,

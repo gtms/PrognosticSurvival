@@ -1,4 +1,7 @@
 ## medianPolish
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## performs median polish of a gct
 
 medianPolish <- function (gct) {

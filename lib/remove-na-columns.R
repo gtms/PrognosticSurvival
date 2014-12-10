@@ -1,4 +1,7 @@
 ## removeNAcolumns
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
+
 ## Given a gct, returns the gct only with the samples successfully profiled for a
 ## minimum percentage of 'threshold' genes.
 
