@@ -2,6 +2,7 @@
 cache/
 config/
 graphs/
+tmp/
 
 ## files
 .Rhistory
