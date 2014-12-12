@@ -103,10 +103,10 @@ studies.dfr <- read.csv2 ("data/csv/studies.csv",
 ## With 16 cores:
 ##      user    system   elapsed 
 ## 18035.455   908.310  5140.573 (estimated one hour and thirty minutes)
-system.time (fracGenesSignif.lst <- setNames (llply (studies.dfr$study[1:5],
+system.time (fracGenesSignif.lst <- setNames (llply (studies.dfr$study,
                                                      computeFracGenesSignif,
                                                      print.token = TRUE),
-                                              studies.dfr$study[1:5]))
+                                              studies.dfr$study))
 
 fracGenesSignif.dfr <- do.call (rbind, lapply (fracGenesSignif.lst, function (lst) lst$fracGenesSignif))
 
