@@ -7,6 +7,7 @@
 loopSigsListGCT <- function (gct,
                              surv,
                              sig.lst,
+                             discrete.pc1 = FALSE,
                              pca.method = "svd",
                              minGenes = 5,
                              doParallel = FALSE,
@@ -22,7 +23,13 @@ loopSigsListGCT <- function (gct,
                                  sig,
                                  method = pca.method,
                                  scale.matrix = scale.matrix)
-        data.frame (logRankTest (score$discrete,
+        ## Take the continuous value of PC1 or its binarized counterpart?
+        if (discrete.pc1) {
+            sc <- score$discrete
+        } else {
+            sc <- score$continuous
+        }
+        data.frame (logRankTest (sc,
                                  surv[!score$rm.samples]))
     },
                       .parallel = doParallel)
