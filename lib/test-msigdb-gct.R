@@ -13,6 +13,7 @@ testMSigDBgct <- function (gct,
                                         # expression profile
                            is.rnd = FALSE, # test with randomized MSigDB signatures?
                            pca.method = "svd",
+                           discrete.pc1 = FALSE,
                            scale.matrix = TRUE,
                            nCores = NULL) {
   if (is.null (nCores)) {
@@ -41,6 +42,7 @@ testMSigDBgct <- function (gct,
   loopSigsListGCT (gct = gctRdx,
                    surv = survRdx,
                    sig.lst = sig.lst,
+                   discrete.pc1 = discrete.pc1,
                    pca.method = pca.method,
                    minGenes = minGenes,
                    doParallel = doParallel,

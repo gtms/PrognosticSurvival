@@ -7,7 +7,7 @@
 loopSigsListGCT <- function (gct,
                              surv,
                              sig.lst,
-                             discrete.pc1 = FALSE,
+                             discrete.pc1 = discrete.pc1,
                              pca.method = "svd",
                              minGenes = 5,
                              doParallel = FALSE,
