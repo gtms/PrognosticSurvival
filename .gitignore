@@ -3,6 +3,7 @@ cache/
 config/
 graphs/
 tmp/
+data/raw-data-reanalysis-GSE9893
 
 ## files
 .Rhistory
