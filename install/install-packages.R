@@ -1,4 +1,6 @@
 ## This script installs all required packages for analysis
+## Please update R to the latest version before running
+## Tested with R version 3.1.2 on 13Jan2015
 ## Gil Tomás, IRIBHM, ULB
 ## <gil.tomas@ulb.ac.be>
 
@@ -21,9 +23,9 @@ install_github ("gtms/MicroarrayToolbox")
 
 ## load MicroarrayToolbox and install remaining packages
 library (MicroarrayToolbox)
-pkgs.dfr <- data.frame (pkg = c ("pcaMethods", "qvalue", "SNAGEE",
-                            "amap", "survival", "doMC", "MASS", "stargazer"),
-                        repos = c (rep ("bioc", 3), rep ("cran", 5)),
+pkgs.dfr <- data.frame (pkg = c ("pcaMethods", "qvalue", "SNAGEE", "limma",
+                            "amap", "survival", "doMC", "MASS", "stargazer", "knitr"),
+                        repos = c (rep ("bioc", 4), rep ("cran", 6)),
                         stringsAsFactors = FALSE)
 instant.pkgs (pkgs.dfr)
 
