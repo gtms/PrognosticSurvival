@@ -90,14 +90,32 @@ ggplot (os.dtb, aes (x = time, colour = factor (status))) +
 
 @
 
-Within the 114 studies assayed in our analysis, \textsf{GSE9893-breast} was
-among those with a higher fraction of genes associated with outcome at a
+Among the 114 studies assayed in our analysis, \textsf{GSE9893-breast} is the
+one with the highest fraction of genes associated with outcome at a
 \emph{p-}value of 0.05 (prognostic fraction, as computed by the script
 \textsf{munge/compute-frac-genes-signif.R}):
 
 <<prognostic-fraction, cache=TRUE>>=
 (frac.signif.pval (gct = gct,
                    s = os))
+
+@
+
+Intriguingly, nearly all MSigDB C2 signatures appear associated with outcome in
+this data-set.  Table~\ref{tab:prognostic-fraction-table} shows the top six
+studies with highest fraction of MSigDB C2 signatures associated with outcome,
+as computed by the script \textsf{munge/compute-frac-signif.R}.
+
+<<prognostic-fraction-table, echo=FALSE, results="asis">>=
+head.dfr <- head (fracSignif.dfr[order (fracSignif.dfr$msigdb, decreasing = TRUE), ])
+head.dfr <- head.dfr[, c ("study", "msigdb", "event")]
+colnames (head.dfr) <- c ("Study", "Fraction Significant Tests", "Event")
+
+stargazer (head.dfr,
+           title = "Top six studies with highest fraction of MSigDB C2 signatures associated with outcome",
+           label = "tab:prognostic-fraction-table",
+           summary = FALSE,
+           rownames = FALSE)
 
 @
 
@@ -132,6 +150,8 @@ vignette of the \texttt{SNAGEE} package (accessible by evaluating the command
   normalization issues).  Numbers around 20-30\% are average, depending on the
   platform.
 \end{quote}
+
+\pagebreak
 
 <<plot-qual-study, echo=FALSE, fig.lp="fig:", fig.cap="Distribution of Signal/Noise quality metrics.  The value in red corresponds to GSE9893-breast", fig.width=7, fig.height=10>>=
 studiesSNQual.dtb <- data.table (SN.metric = studiesSNQual,
