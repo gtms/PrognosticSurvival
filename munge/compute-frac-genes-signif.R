@@ -53,7 +53,7 @@ computeFracGenesSignif <- function (study,
     }
     ## entry token
     if (print.token) {
-        cat (sprintf ("Now doing %s . . . ", study))
+        message (sprintf ("Now doing %s . . . ", study), appendLF = FALSE)
     }
     ## loads study
     dset <- loadDset (study)
@@ -83,7 +83,7 @@ computeFracGenesSignif <- function (study,
     fracGenesSignif.dtb[, study := study]
     ## exit token
     if (print.token) {
-        cat (sprintf ("%s done!\n", study))
+        message (sprintf ("%s done!\n", study))
     }
     ## return
     list (logRanktests = logRankTests.dtb,
@@ -102,13 +102,14 @@ studies.dfr <- read.csv2 ("data/csv/studies.csv",
 ## COMPUTATIONALLY INTENSIVE!
 ## With 16 cores:
 ##      user    system   elapsed 
-## 18035.455   908.310  5140.573 (estimated one hour and thirty minutes)
+## 21391.551  1311.320  5039.397 (roughly one hour and 25 minutes)
 system.time (fracGenesSignif.lst <- setNames (llply (studies.dfr$study,
                                                      computeFracGenesSignif,
                                                      print.token = TRUE),
                                               studies.dfr$study))
 
-fracGenesSignif.dfr <- do.call (rbind, lapply (fracGenesSignif.lst, function (lst) lst$fracGenesSignif))
+fracGenesSignif.dtb <- do.call (rbind, lapply (fracGenesSignif.lst, function (lst) lst$fracGenesSignif))
+fracGenesSignif.dfr <- as.data.frame (fracGenesSignif.dtb)
 
 ## * Caches results
 ProjectTemplate:::cache ("fracGenesSignif.lst")
