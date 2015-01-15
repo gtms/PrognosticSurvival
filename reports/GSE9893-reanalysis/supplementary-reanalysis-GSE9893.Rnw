@@ -1,0 +1,374 @@
+\documentclass{article}
+\usepackage[colorlinks=true,linkcolor=blue,pagecolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+\usepackage{siunitx}
+
+\title{Reanalysis of GSE9893--breast}
+\author{Gil Tom\'{a}s and Vincent Detours\\
+  % {\tt vdetours@ulb.ac.be}\\
+  \textsc{IRIBHM---ULB}}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+<<setup, include=FALSE>>=
+## sets global chunk options
+opts_chunk$set (cache.path = "cache/",
+                fig.path = "figures/",
+                fig.align = "center",
+                fig.show = "hold",
+                cache = FALSE,
+                size = "small")
+options (replace.assign = TRUE, width = 72)
+
+@
+
+\section{GSE9893-breast}
+
+<<preamble, message=FALSE>>=
+library (ProjectTemplate)
+load.project ()
+
+@
+
+Here we focus on the data-set \textsf{GSE9893-breast}, comprising 155 samples of
+tamoxifen-treated primary breast cancers.  These samples were hybridized on an
+homemade \mbox{70-mer} chip containing \SI{22680} probes, mapping to \SI{21329}
+human specific genes.  The original experiment was carried out to look for a
+gene expression signature to predict the recurrence of tamoxifen-treated primary
+breast cancer.
+
+With this reanalysis, we aim to quantify the effect of a normalization artifact
+in prognostic content.  The data-set was downloaded from
+\href{http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9893}{\textsc{geo}}
+with the \texttt{GEOquery} package, with original normalization.  The expression
+matrix was then feature collapsed using a maxSum routine and median polished
+(more details in \textsf{reports/supplementary-methods/supplementary.pdf}).
+
+The data-set can be loaded with the command:
+
+<<load-dset>>=
+dset <- loadDset ("GSE9893-breast")
+
+@
+
+The expression matrix can be extracted as a \texttt{gct} list.  The survival
+event considered in this analysis is overall survival, found encoded in the
+\texttt{pheno} data frame as an object of class survival:
+
+<<expression-matrix-survival-object>>=
+## expression matrix
+gct <- dset$gct
+str (gct)
+
+## survival object
+os <- dset$pheno$os
+head (os)
+
+@
+
+Figure~\ref{fig:plot-event-distribution} shows a visual representation of the
+distribution of events (death in red, censored in black), across the 14 years
+spanned by the study.
+
+<<plot-event-distribution, echo=FALSE, fig.lp="fig:", fig.cap="Distribution of survival events in GSE9893 (red: deceased event; black: censored event)", fig.width=6, fig.height=2.5>>=
+os.dtb <- data.table (unclass (os))
+
+ggplot (os.dtb, aes (x = time, colour = factor (status))) +
+    geom_point (aes (y = -.02), position = position_jitter (height = .02), size = 2) +
+        scale_colour_manual (values = c ("0" = "black", "1" = "darkred")) +
+            geom_density (data = os.dtb[status == 0], aes (x = time)) +
+                geom_density (data = os.dtb[status == 1], aes (x = time), colour = "darkred") +
+                    scale_y_continuous (limits = c (-.05, .05)) +
+                        ylab ("") +
+                            xlab ("time (months)") +
+                                theme_bw () +
+                                    theme (legend.position = "none",
+                                           axis.text.y = element_blank (),
+                                           axis.ticks.y = element_blank ())
+
+@
+
+Within the 114 studies assayed in our analysis, \textsf{GSE9893-breast} was
+among those with a higher fraction of genes associated with outcome at a
+\emph{p-}value of 0.05 (prognostic fraction, as computed by the script
+\textsf{munge/compute-frac-genes-signif.R}):
+
+<<prognostic-fraction, cache=TRUE>>=
+(frac.signif.pval (gct = gct,
+                   s = os))
+
+@
+
+\section{Signal/Noise quality metric}
+The \texttt{qualStudy} function of the \texttt{SNAGEE} package computes a
+signal/noise quality metric based on gene-gene correlations across expression
+profiles.  The following code computes this metric for all data-sets in our
+study.
+
+<<compute-qual-study, cache=TRUE, warning=FALSE>>=
+## loads studies.dfr
+studies.dfr <- read.csv2 ("data/csv/studies.csv", stringsAsFactors = FALSE)
+
+allStudies <- studies.dfr$study
+system.time (studiesSNQual <- laply (allStudies, computeQualStudy))
+
+names (studiesSNQual) <- allStudies
+
+@
+
+Figure~\ref{fig:plot-qual-study} shows the distribution of the values computed
+for this metric across all 114 data-sets compiled in this analysis.  The value
+computed for \textsf{\mbox{GSE9893-breast}} is shown in red.  According to the
+vignette of the \texttt{SNAGEE} package (accessible by evaluating the command
+\texttt{browseVignettes (``SNAGEE'')}):
+
+\begin{quote}
+  The SNR [signal-to-noise ratio] of a study is based on the correlation between
+  its gene-gene correlation matrix and the expected matrix, and so is a number
+  between $-1$ and 1.  Practically, numbers near or below 0 are symptomatic of
+  seriously problematic studies (e.g. gene annotation problems, serious
+  normalization issues).  Numbers around 20-30\% are average, depending on the
+  platform.
+\end{quote}
+
+<<plot-qual-study, echo=FALSE, fig.lp="fig:", fig.cap="Distribution of Signal/Noise quality metrics.  The value in red corresponds to GSE9893-breast", fig.width=7, fig.height=10>>=
+studiesSNQual.dtb <- data.table (SN.metric = studiesSNQual,
+                                 study = names (studiesSNQual),
+                                 is.GSE9893 = grepl ("GSE9893", names (studiesSNQual)))
+
+qualStudy.plt <- ggplot (studiesSNQual.dtb, aes (x = SN.metric,
+                                                 y = reorder (study, SN.metric),
+                                                 colour = is.GSE9893)) +
+                                                     geom_point (size = 3)
+qualStudy.plt <- qualStudy.plt +
+    scale_colour_manual (values = c ("TRUE" = "darkred",
+                             "FALSE" = "black")) +
+                                 ylab ("") +
+                                     xlab ("Signal/Noise quality metric")
+
+qualStudy.plt +
+    theme_bw () +
+        theme (legend.position = "none",
+               panel.grid.major = element_blank(),
+               axis.text.y= element_text (size = 7))
+
+@
+
+The quality metric observed for \textsf{GSE9893-breast} is:
+
+<<GSE9893-qual-study>>=
+studiesSNQual["GSE9893-breast"]
+
+@
+
+\section{Demonstration of the batch effect and its consequences}
+
+The following code loads and cleans the descriptor file \textsf{GSE9893-gpr.csv}.
+
+<<read-parse-GSE9893-gpr-csv, warning=FALSE>>=
+## reads and cleans GSE9893-gpr.csv
+gpr.dfr <- read.csv2 ("data/raw-data-reanalysis-GSE9893/GSE9893-gpr.csv")
+colnames (gpr.dfr) <- sapply (gpr.dfr[1, ], gsub,
+                              pattern = "^(.*)=(.*)",
+                              replacement = "\\1")
+colnames (gpr.dfr)[1] <- "gsm"
+gpr.dfr$gsm <- gsub (".gpr", "", gpr.dfr$gsm)
+## removes constant variables
+gpr.dfr <- gpr.dfr[sapply (gpr.dfr, function (x) length (unique (x)) > 1)]
+## to data table
+gpr.dtb <- data.table (gpr.dfr, key = "gsm")
+## reorders according to dset$pheno
+gpr.dtb <- gpr.dtb[rownames (dset$pheno)]
+## whenever appropriate, removes everything before '=' (included) from each column
+gpr.dtb <- gpr.dtb[, lapply (.SD, gsub, pattern = "^(.*)=(.*)", replacement = "\\2")]
+## transform variables to numeric
+numVar <- c ("Temperature", "PMTGain", "ScanPower", "LaserPower")
+for (j in numVar) set (gpr.dtb, j = j, value = as.numeric (gpr.dtb[[j]]))
+## creates new variable defined by the presence of the string 'bordeaux' in the
+## 'Settings' variable
+gpr.dtb <- gpr.dtb[, Bordeaux := grepl ("bordeaux", Settings)]
+## creates new variable by extracting the series number referenced in the
+## variable 'ImageFiles'
+gpr.dtb <- gpr.dtb[, Series := gsub (".*rie[[:space:]]*([0-9]+).*", "\\1", ImageFiles)]
+gpr.dtb$Series <- as.numeric (gpr.dtb$Series)
+
+@
+
+Notice that arrays were scanned within two discrete time intervals:
+
+<<array-dates>>=
+gpr.dtb <- gpr.dtb[, Date := as.Date (DateTime, "%Y/%m/%d")]
+gpr.dtb <- gpr.dtb[, Time := as.numeric (Date)]
+gpr.dtb <- gpr.dtb[, Year := as.numeric (gsub ("^([0-9]+)-(.*)", "\\1", Date))]
+
+with (gpr.dtb, hist (Time - min (Time),
+                     breaks = 50,
+                     main = "",
+                     xlab = "Scan date [days]"))
+
+@
+
+Non-incidentally, scan dates are shown to be associated with overall survival:
+
+<<scan-date-outcome>>=
+summary (coxph (os ~ gpr.dtb$Time))
+summary (coxph (os ~ gpr.dtb$Year))
+
+plot (survfit (os ~ gpr.dtb$Year),
+      xlab = "Time [months]",
+      ylab = "Survival",
+      col = 1:2)
+
+@
+
+Notice the massive batch effect associated with the variable
+\texttt{gpr.dtb\$Year}:
+
+<<batch-effect-scan-year>>=
+pcaRes <- prcomp (t (gct$data))
+
+plot (pcaRes)
+
+pt <- rep (1, nrow (gct$data))
+pt[dset$pheno$status == "RF"] <- 3
+col <- rep ("black", nrow (gct$data))
+col[gpr.dtb$Year == "2006"] <- "red"
+plot (pcaRes$x[, 1], pcaRes$x[, 2], col = col, pch = pt,
+      xlab = paste ("PC1 (", round (100 * pcaRes$sdev[1] ^ 2 / sum (pcaRes$sdev ^ 2),
+          d = 1), "%)", sep = ""),
+      ylab = paste ("PC2 (", round (100 * pcaRes$sdev[2] ^ 2 / sum (pcaRes$sdev ^ 2),
+          d = 1), "%)", sep = ""),
+      cex = 2)
+
+@
+
+The batch effect is also visible from the array-wise gene expression
+distributions:
+
+<<array-expression-distribution>>=
+boxplot (gct$data,
+         range = 0,
+         col = col,
+         xlab = "Samples",
+         ylab = "Expression",
+         pch = ".",
+         lwd = 0.5)
+
+@
+
+\section{Re-normalization from raw-data}
+
+We downloaded the raw gpr files from \textsc{geo} and re-normalized them with
+the Bioconductor package \textsf{limma}.
+
+<<re-normalize, cache=TRUE>>=
+
+## reads gpr files (these are one-color arrays scans)
+gpr.dir <- "data/raw-data-reanalysis-GSE9893/GSE9893-gpr"
+gpr.files <- file.path (gpr.dir, list.files (gpr.dir))
+
+ff <- function (x) as.numeric(x$Flags > -99)
+Cy5 <- "F635 Mean" # fools limma to read single clolor genepix file
+RG <- read.maimages (gpr.files, source = "genepix.median",
+                     wt.fun = ff,
+                     columns = list (R = Cy5, G = Cy5),
+                     verbose = FALSE)
+RG$G <- NULL
+
+## quantile-nomalize arrays
+norm <- normalizeBetweenArrays (RG$R, method = "quantile")
+norm <- log2 (norm)
+
+## reorder columns
+colnames (norm) <- gsub ("(.*)/(.*)$", "\\2", colnames (norm))
+norm <- norm[, colnames (gct$data)]
+
+## gene-wise average
+norm <- aggregate (norm, by = list (RG$genes$Name), mean)
+rownames (norm) <- norm[, 1]
+norm <- as.matrix (norm[, -1])
+
+@
+
+No longer does the first principal component underlines such a pronounced batch
+effect:
+
+<<batch-effect-post-renorm>>=
+pcaResNorm <- prcomp (t (norm))
+plot (pcaResNorm)
+
+plot (pcaResNorm$x[, 1],
+      pcaResNorm$x[,2],
+      col = col, pch = pt,
+      xlab = paste ("PC1 (", round (100 * pcaResNorm$sdev[1] ^ 2 / sum (pcaResNorm$sdev ^ 2),
+          d = 1), "%)", sep = ""),
+      ylab = paste ("PC2 (", round (100 * pcaResNorm$sdev[2] ^ 2 / sum (pcaResNorm$sdev ^ 2),
+          d = 1), "%)", sep = ""))
+
+@
+
+Obviously, array expression distribution is now identical:
+
+<<array-expression-distribution-post-renorm>>=
+boxplot (norm,
+         range = 0,
+         col = col,
+         xlab = "Samples",
+         ylab = "Expression",
+         pch = ".",
+         lwd = 0.5)
+
+@
+
+Concomitantly, prognostic fraction in \textsf{GSE9893-breast} is sharply
+reduced:
+
+<<prognostic-fraction-post-renorm, cache=TRUE>>=
+norm.gct <- list (row.descriptions = rownames (norm),
+                  data = norm)
+
+(frac.signif.pval (gct = norm.gct,
+                   s = os))
+
+@
+
+Yet, the signal/noise quality metric is improved and now within the IQR range of
+the surveyed data-sets:
+
+<<qual-study-GSE9893-post-renorm, cache=TRUE>>=
+(GSE9893NormSNQual <- qualStudy (gct2qualStudy (norm.gct)))
+
+quantile (studiesSNQual, c (0.25, 0.75))
+
+@
+
+Figure~\ref{fig:plot-hist-qual-study} revisits the distribution of
+signal-to-noise quality metrics across all studies.  The black vertical line
+marks the quality registered for \textsf{GSE9893-breast} with original
+normalization.  The red vertical line marks the new quality metric computed
+post-re-normalization.
+
+<<plot-hist-qual-study, echo=FALSE, fig.lip="fig:", fig.cap="Distribution of Signal/Noise quality metrics. Black line: GSE9893-breast with original normalization; red line: GSE9893-breast post-re-normalization", fig.height=5>>=
+qualStudyHist.plt <- ggplot (studiesSNQual.dtb,
+                             aes (x = SN.metric)) +
+                                 geom_histogram (fill = "grey50",
+                                                 binwidth = .05)
+
+qualStudyHist.plt <- qualStudyHist.plt +
+    geom_vline (xintercept = studiesSNQual["GSE9893-breast"],
+                colour = "black") +
+                    geom_vline (xintercept = GSE9893NormSNQual,
+                                colour = "darkred")
+
+qualStudyHist.plt + theme_bw ()
+
+@
+
+<<session-info>>=
+sessionInfo ()
+
+@
+
+\end{document}
