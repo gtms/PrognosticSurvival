@@ -1,5 +1,9 @@
 ## Produces image with fraction of significant tests predicting outcome across
 ## all cancer datasets in the study
+## output saved in graphs/fraction-significant-tests-base-R-graphics.svg
+## requires manual post-edition with inkscape
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## * Preamble
 library (ProjectTemplate)
@@ -102,16 +106,9 @@ svg (file = "graphs/fraction-significant-tests-base-R-graphics.svg",
      width = 12,
      height = 10)
 
-## pdf (file = "img/fraction-significant-tests-base-R-graphics.pdf",
-##      width = 12,
-##      height = 10)
-
 ## sets layout
 layout (mat = matrix (1:4, ncol = 4),
         widths = c (1.5, 1, .5, 1.5))
-
-## defines the setup the numbers of columns and the margins of the device
-## par (mar = c (4, 0, 5, .5))
 
 ## panel #1
 ## study names
@@ -257,72 +254,7 @@ points (x = rev (merged.dfr$genes.relapse),
         col = colors["brown"],
         pch = 1)
 
-## panel #5
-## This panel plots the fraction of significant tests
-## for studies with RELAPSE as endpoint
-## colours to be used: blue_mid and blue_dark
-## par (mar = c (9.9, .1, 9.9, .1))
-## sets the emply plot device
-## plot (x = NA,
-##       y = NA,
-##       ## col = colors["blue_mid"],
-##       pch = 19,
-##       main = "Relapse",
-##       xlim = c (0, 1),
-##       ylim = c (0, nStudies),
-##       yaxt = "n", ## no x axis
-##       xlab = "", ## no x label
-##       ylab = "", ## no y label
-##       frame.plot = FALSE) # whether to give the plot a frame or not
-
-## adds red line at x = .05
-## abline (v = .05,
-##         lty = 3,
-##         col = "darkred")
-
-## adds results with randomized signatures
-## points (x = rev (merged.dfr$random.relapse),
-##         y = 1:nStudies,
-##         col = colors["blue_mid"],
-##         pch = 19)
-
-## adds results with regular signatures
-## points (x = rev (merged.dfr$msigdb.relapse),
-##         y = 1:nStudies,
-##         col = colors["blue_dark"],
-##         pch = 19)
-
-## adds results with fraction of genes associated with outcome
-## points (x = rev (merged.dfr$genes.relapse),
-##         y = 1:nStudies,
-##         col = colors["red_light"],
-##         pch = 19)
-
-## adds legend text at the bottom right corner
-## regular
-## text (x = 1,
-##       y = 4,
-##       labels = "MSigDB C2",
-##       pos = 2,
-##       cex = 1.5,
-##       col = colors["blue_dark"])
-
-## random
-## text (x = 1,
-##       y = 1,
-##       labels = "random",
-##       pos = 2,
-##       cex = 1.5,
-##       col = colors["blue_mid"])
-
-## genes
-## text (x = 1,
-##       y = 7,
-##       labels = "singluar genes",
-##       pos = 2,
-##       cex = 1.5,
-##       col = colors["brown"])
-
+## adds legend to the bottom right
 legend ("bottomright",
         legend = c ("death endpoint",
             "relapse endpoint",
