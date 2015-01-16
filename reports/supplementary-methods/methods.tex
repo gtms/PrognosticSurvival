@@ -47,7 +47,7 @@ evaluated the association with clinical outcome of the 4722 curated gene sets
 from the \href{http://www.broadinstitute.org/gsea/msigdb/index.jsp}{Molecular
   Signatures Database} (\mbox{MSigDB C2}).  \mbox{MSigDB C2} signatures are
 manually curated from the literature on gene expression and also include gene
-sets from curated pathways databases such as KEGG.
+sets from curated pathways databases such as KEGG.\@
 
 Version 4.0 of the MSigDB curated gene sets (updated on May 31, 2013) was
 downloaded as a \textsf{gmt} file (located under \textsf{data/sigs/}) and parsed
@@ -109,7 +109,7 @@ of 0.05; \textsf{R} code underlying Fig. 2 is available in
   500, 750, 1000, 1250, 1500, 1750\}, the prognostic fraction was computed for
   100 subsets of \emph{N} samples selected at random.
 \item \emph{Effect of follow-up time.}  For each \emph{t} $\in$ \{25, 50, 75,
-  100, 125, 150, 175, 200, $max_{cohort}$(follow-up time)\} months, all
+  100, 125, 150, 175, 200, $\max_{cohort}$(follow-up time)\} months, all
   follow-up times $>$ \emph{t} were set to \emph{t} and the respective events
   were set to 0 (i.e., no event).  The prognostic fraction was then computed for
   100 subsets of 500 patients.
@@ -117,14 +117,14 @@ of 0.05; \textsf{R} code underlying Fig. 2 is available in
   patients (as defined by the vector
   \texttt{metabric.dset\$pheno\$ER\_IHC\_status}) $\in$ \{0, 0.1, 0.2, \ldots{},
   0.9, 1\}, we randomly selected 300 $\times$ \emph{E} ER+ samples and \mbox{300
-    $\times$ (1 -- \emph{E})} ER-- samples and computed the respective
+    $\times$ (1 $-$ \emph{E})} ER-- samples and computed the respective
   prognostic fraction.  This procedure was repeated 100 times for each value of
   \emph{E}.
 \item \emph{Effect of nodal status.}  For each fraction \emph{L} of node
   positive patients (defined as
   \texttt{metabric.dset\$pheno\$lymph\_node\_positive} $>$ 0) $\in$ \{0, 0.1,
   0.2, \ldots{}, 0.9, 1\}, we randomly selected 500 $\times$ \emph{L} node
-  positive and 500 $\times$ (1 -- \emph{L}) node negative samples and computed
+  positive and 500 $\times$ (1 $-$ \emph{L}) node negative samples and computed
   the respective prognostic fraction.  This procedure was repeated 100 times for
   each value of \emph{L}.
 \item \emph{Effect of cellularity.}  For each cellularity class (defined by the
@@ -146,7 +146,7 @@ universal correlation matrix computed from a very large number of studies.
 Data-sets with poor gene annotation or with strong batch effects will depart
 from this universal matrix and score poorly.  Scan dates were extracted from the
 ``DateTime'' field available in GenePix scanner \texttt{*.gpr} files available
-in the archive \textsf{GSE9693\_RAW.tar} provided in NCBI's GEO.  The survival
+in the archive \textsf{GSE9693\_RAW.tar} provided in NCBI's GEO.\@ The survival
 analysis of scan dates was performed with the \texttt{coxph} function of
 \textsf{R}'s \textsf{survival} package.  Principal components analysis was
 performed with \textsf{R}'s \texttt{prcomp} function.  Raw expression data were
