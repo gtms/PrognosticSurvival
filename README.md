@@ -19,7 +19,7 @@ URL: <https://owncloud.ulb.ac.be/public.php?service=files&t=506a90a16b44d0e8050f
 ## Preliminaries and license
 
 The execution of this code requires a LINUX/UNIX environment with a working R
-(version>=3.0) and TeX installations.  Its sole intent is to support the
+(version>=3.1.2) and TeX installations.  Its sole intent is to support the
 findings reported in the quoted article.
 
 This file is free software: you can redistribute it and/or modify it under the
