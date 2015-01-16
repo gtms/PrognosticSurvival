@@ -103,31 +103,33 @@ significantly associated with disease-specific survival, at at \emph{p}--value
 of 0.05; \textsf{R} code underlying Fig. 2 is available in
 \textsf{lib/metabric-analysis.R} and \textsf{src/metabric.R}):
 \begin{itemize}
-\item Sampling effect.  The gene-wise prognostic fraction was computed for 100
-  randomly selected subsets of 500 samples.
-\item Effect of sample size.  For each \emph{N} $\in$ \{100, 200, 300, 500, 750,
-  1000, 1250, 1500, 1750\}, the prognostic fraction was computed for 100 subsets
-  of \emph{N} samples selected at random.
-\item Effect of follow-up time.  For each \emph{t} $\in$ \{25, 50, 75, 100, 125,
-  150, 175, 200, $max_{cohort}$(follow-up time)\} months, all follow-up times
-  $>$ \emph{t} were set to \emph{t} and the respective events were set to 0
-  (i.e., no event).  The prognostic fraction was then computed for 100 subsets
-  of 500 patients.
-\item Effect of ER status.  For each fraction \emph{E} of ER positive patients
-  (as defined by the vector \texttt{metabric.dset\$pheno\$ER\_IHC\_status})
-  $\in$ \{0, 0.1, 0.2, \ldots{}, 0.9, 1\}, we randomly selected 300 $\times$
-  \emph{E} ER+ samples and \mbox{300 $\times$ (1 -- \emph{E})} ER-- samples and
-  computed the respective prognostic fraction.  This procedure was repeated 100
-  times for each value of \emph{E}.
-\item Effect of nodal status.  For each fraction \emph{L} of node positive
-  patients (defined as \texttt{metabric.dset\$pheno\$lymph\_node\_positive} $>$
-  0) $\in$ \{0, 0.1, 0.2, \ldots{}, 0.9, 1\}, we
-  randomly selected 500 $\times$ \emph{L} node positive and 500 $\times$ (1 --
-  \emph{L}) node negative samples and computed the respective prognostic
-  fraction.  This procedure was repeated 100 times for each value of \emph{L}.
-\item Effect of cellularity.  For each cellularity class (defined by the three
-  levels of the factor \texttt{metabric.dset\$pheno\$cellularity}) we computed
-  the prognostic fraction in 100 subsets of 175 samples each.
+\item \emph{Sampling effect.}  The gene-wise prognostic fraction was computed
+  for 100 randomly selected subsets of 500 samples.
+\item \emph{Effect of sample size.}  For each \emph{N} $\in$ \{100, 200, 300,
+  500, 750, 1000, 1250, 1500, 1750\}, the prognostic fraction was computed for
+  100 subsets of \emph{N} samples selected at random.
+\item \emph{Effect of follow-up time.}  For each \emph{t} $\in$ \{25, 50, 75,
+  100, 125, 150, 175, 200, $max_{cohort}$(follow-up time)\} months, all
+  follow-up times $>$ \emph{t} were set to \emph{t} and the respective events
+  were set to 0 (i.e., no event).  The prognostic fraction was then computed for
+  100 subsets of 500 patients.
+\item \emph{Effect of ER status.}  For each fraction \emph{E} of ER positive
+  patients (as defined by the vector
+  \texttt{metabric.dset\$pheno\$ER\_IHC\_status}) $\in$ \{0, 0.1, 0.2, \ldots{},
+  0.9, 1\}, we randomly selected 300 $\times$ \emph{E} ER+ samples and \mbox{300
+    $\times$ (1 -- \emph{E})} ER-- samples and computed the respective
+  prognostic fraction.  This procedure was repeated 100 times for each value of
+  \emph{E}.
+\item \emph{Effect of nodal status.}  For each fraction \emph{L} of node
+  positive patients (defined as
+  \texttt{metabric.dset\$pheno\$lymph\_node\_positive} $>$ 0) $\in$ \{0, 0.1,
+  0.2, \ldots{}, 0.9, 1\}, we randomly selected 500 $\times$ \emph{L} node
+  positive and 500 $\times$ (1 -- \emph{L}) node negative samples and computed
+  the respective prognostic fraction.  This procedure was repeated 100 times for
+  each value of \emph{L}.
+\item \emph{Effect of cellularity.}  For each cellularity class (defined by the
+  three levels of the factor \texttt{metabric.dset\$pheno\$cellularity}) we
+  computed the prognostic fraction in 100 subsets of 175 samples each.
 \end{itemize}
 
 \section{Re-analysis of GSE9893}

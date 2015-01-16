@@ -139,7 +139,7 @@ names (studiesSNQual) <- allStudies
 Figure~\ref{fig:plot-qual-study} shows the distribution of the values computed
 for this metric across all 114 data-sets compiled in this analysis.  The value
 computed for \textsf{\mbox{GSE9893-breast}} is shown in red.  According to the
-vignette of the \texttt{SNAGEE} package (accessible by evaluating the command
+vignette of the \texttt{SNAGEE} package (accessed by evaluating the command
 \texttt{browseVignettes (``SNAGEE'')}):
 
 \begin{quote}
