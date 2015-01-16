@@ -17,7 +17,6 @@ data/raw-data-reanalysis-GSE9893
 *.org
 *.gmt
 *.toc
-*.tex
 *.bib
 *.xml
 *.bbl

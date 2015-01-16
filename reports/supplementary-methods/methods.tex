@@ -1,0 +1,159 @@
+\section{Software Environment}
+All analysis carried in this study were performed in the \textsf{R} software
+environment for statistical computing,\cite{r-manual} version 3.1.2, on a
+\textsf{Unix} system.  Refer to the \textsf{README.md} file for instructions on
+how to setup an environment for reproduction of this analysis.
+
+\section{Datasets}
+A total of 114 public data-sets of cancer gene expression profiles spanning 22
+types of cancer were downloaded from public repositories, manually curated and
+pre-processed for downstream analysis.  Sources for data-sets include the
+\href{http://www.ncbi.nlm.nih.gov/geo/}{Gene Expression
+  Omnibus}\cite{edgar_gene_2002},
+\href{https://insilicodb.com/}{InSilicoDB}\cite{taminau_insilicodb:_2011} and
+the \href{http://cancergenome.nih.gov/}{TCGA Research Network site}.  Individual
+data-sets are described in the file \textsf{studies.csv} (located under
+\textsf{data/csv/}) and are packed as \textsf{Rda} objects (located under
+\textsf{data/rda/}).  Data-sets can be loaded into an \textsf{R} environment
+with the function \texttt{loadDset} (refer to the README.md file for details on
+how to setup an \textsf{R} environment for reproduction of the analysis).  Upon
+loading a particular study into your \textsf{R} session, you will find a list
+named \textsf{dset} in the global environment.
+
+Clinical data associated with individual data-sets was manually curated and
+formatted into a \textsf{data frame} object, labeled \texttt{dset\$pheno}.
+Available clinical outcomes for every patient can be found in this \textsf{data
+  frame}.  These may include: overall survival (\textsc{os}, reported event is
+death); disease-specific survival (\textsc{dss}, reported event is death from
+disease); distant-metastasis free survival (\textsc{dmfs}, reported event is
+occurrence of distant metastasis); and disease-free survival (\textsc{dfs},
+reported event is relapse from disease).  Studies sourced from InSilicoDB were
+\textsc{frma} normalized\cite{mccall_frozen_2010}; the remaining studies were
+used with their original normalizations.  Gene annotation for each study was
+updated using Bioconductor and can be retrieved as \texttt{dset\$ga}
+\textsf{list} objects.  Gene symbols were retained as the feature descriptors
+for all data-sets.  The expression matrix of each study went through a round of
+feature collapsing using a maxSum routine (function
+\texttt{collaspseRows})\cite{miller_strategies_2011}, and was median polished
+(function \texttt{medianPolish}) as suggested in
+\cite{ramaswamy_molecular_2003,venet_most_2011}.  Expression matrices were then
+stored in the \textsf{gct} format
+(\href{http://www.broadinstitute.org/cancer/software/genepattern/gp\_guides/file-formats/sections/gct}{http://www.broadinstitute.org/})
+and can be accessed as \texttt{dset\$gct} objects.
+
+\section{\mbox{MSigDB C2} signatures}
+In order to quantify the prognostic signals of each cancer data-set, we
+evaluated the association with clinical outcome of the 4722 curated gene sets
+from the \href{http://www.broadinstitute.org/gsea/msigdb/index.jsp}{Molecular
+  Signatures Database} (\mbox{MSigDB C2}).  \mbox{MSigDB C2} signatures are
+manually curated from the literature on gene expression and also include gene
+sets from curated pathways databases such as KEGG.
+
+Version 4.0 of the MSigDB curated gene sets (updated on May 31, 2013) was
+downloaded as a \textsf{gmt} file (located under \textsf{data/sigs/}) and parsed
+with a preprocessing script (\textsf{parse-msigdb-sigs.R}).  This script outputs
+two lists of signatures (saved in \textsf{cache/mSigDBc2.RData}): one containing
+all original 4722 signatures with gene symbols as identifiers; and another
+containing 4722 signatures of the same size as the originals, but composed of
+random samplings from the total pool of genes in the collection.
+
+\section{Estimating outcome association}
+
+Estimating association between a genomic marker and clinical outcome requires
+the formulation of an outcome predictor from multi-gene values of expression.
+Traditionally, this is achieved by a function that stratifies the cohort in good
+and bad prognosis groups according to the expression values of the marker.
+Venet et al.\cite{venet_most_2011} used a procedure that consisted in bisecting
+each cohort along the first principal component of the marker's gene expression
+signature.
+
+For simplification purposes, we chose to use the first principal component
+loadings of each expression signature as a non-discretized predictor instead.
+Each continuous predictor was used to estimate the hazard ratio (\textsc{hr})
+and the related log-rank \emph{p}-values of association with outcome using the
+standard Cox procedure implemented in the package \textsf{survival} (function
+\texttt{logRankTest}).
+
+\subsection{Multi-gene signatures}
+For each data-set, we tested the association of all \mbox{MSigDB C2} signature
+with all clinical outcomes available using the procedure described above.  Only
+signatures with at least five genes profiled in the each data-set microarray
+were considered.  For each experimental setting, we then computed the fraction
+of \mbox{MSigDB C2} signatures significantly associated to outcome at a
+\emph{p-}value of 0.05.  To control for potential biases towards cancer-related
+signatures, the same procedure was repeated with randomized \mbox{MSigDB C2}
+signatures.  The results of this computation can be found cached as \textsf{R}
+objects (saved as \textsf{cache/fracSignif.dfr.RData}).
+
+\subsection{Individual genes}
+For each data-set, we tested the association of each individual gene profiled
+with all clinical outcomes available using the procedure described above.
+Continuous values of gene expression were used as predictors in the tested Cox
+models.  For each experimental setting, we then computed the fraction of genes
+significantly associated to outcome at a \emph{p-}value of 0.05.  The results of
+this computation can be found cached as \textsf{R} objects (saved as
+\textsf{cache/fracGenesSignif.dfr.RData}).
+
+\section{Down-sampling experiments on the METABRIC data-set}
+The ``discovery'' and ``validation'' cohorts of the METABRIC data-set were
+merged, yielding a total of 1972 samples with patient follow-up (object
+\texttt{metabric.dset}).  The following experiments were run (prognostic
+fraction refers to the fraction of genes in the merged data-set that are
+significantly associated with disease-specific survival, at at \emph{p}--value
+of 0.05; \textsf{R} code underlying Fig. 2 is available in
+\textsf{lib/metabric-analysis.R} and \textsf{src/metabric.R}):
+\begin{itemize}
+\item Sampling effect.  The gene-wise prognostic fraction was computed for 100
+  randomly selected subsets of 500 samples.
+\item Effect of sample size.  For each \emph{N} $\in$ \{100, 200, 300, 500, 750,
+  1000, 1250, 1500, 1750\}, the prognostic fraction was computed for 100 subsets
+  of \emph{N} samples selected at random.
+\item Effect of follow-up time.  For each \emph{t} $\in$ \{25, 50, 75, 100, 125,
+  150, 175, 200, $max_{cohort}$(follow-up time)\} months, all follow-up times
+  $>$ \emph{t} were set to \emph{t} and the respective events were set to 0
+  (i.e., no event).  The prognostic fraction was then computed for 100 subsets
+  of 500 patients.
+\item Effect of ER status.  For each fraction \emph{E} of ER positive patients
+  (as defined by the vector \texttt{metabric.dset\$pheno\$ER\_IHC\_status})
+  $\in$ \{0, 0.1, 0.2, \ldots{}, 0.9, 1\}, we randomly selected 300 $\times$
+  \emph{E} ER+ samples and \mbox{300 $\times$ (1 -- \emph{E})} ER-- samples and
+  computed the respective prognostic fraction.  This procedure was repeated 100
+  times for each value of \emph{E}.
+\item Effect of nodal status.  For each fraction \emph{L} of node positive
+  patients (defined as \texttt{metabric.dset\$pheno\$lymph\_node\_positive} $>$
+  0) $\in$ \{0, 0.1, 0.2, \ldots{}, 0.9, 1\}, we
+  randomly selected 500 $\times$ \emph{L} node positive and 500 $\times$ (1 --
+  \emph{L}) node negative samples and computed the respective prognostic
+  fraction.  This procedure was repeated 100 times for each value of \emph{L}.
+\item Effect of cellularity.  For each cellularity class (defined by the three
+  levels of the factor \texttt{metabric.dset\$pheno\$cellularity}) we computed
+  the prognostic fraction in 100 subsets of 175 samples each.
+\end{itemize}
+
+\section{Re-analysis of GSE9893}
+The \textsf{R} code underlying the re-analysis of the data-set
+\textsf{GSE9893-breast} can be found in \textsf{src/reanalysis-GSE9893.R}.  Both
+the code and the output figures can be found in the pdf document
+\textsf{reports/GSE9893-reanalysis/supplementary-reanalysis-GSE9893.pdf}.
+
+The data-set-wise signal-to-noise metrics were computed with the function
+\texttt{qualStudy} of the \textsf{R} package \textsf{SNAGEE}
+\cite{venet_measure_2012}.  In short, \textsf{SNAGEE}'s signal-to-noise metrics
+measures the similarity of the gene-gene correlation matrix of a dataset with a
+universal correlation matrix computed from a very large number of studies.
+Data-sets with poor gene annotation or with strong batch effects will depart
+from this universal matrix and score poorly.  Scan dates were extracted from the
+``DateTime'' field available in GenePix scanner \texttt{*.gpr} files available
+in the archive \textsf{GSE9693\_RAW.tar} provided in NCBI's GEO.  The survival
+analysis of scan dates was performed with the \texttt{coxph} function of
+\textsf{R}'s \textsf{survival} package.  Principal components analysis was
+performed with \textsf{R}'s \texttt{prcomp} function.  Raw expression data were
+obtained from the \texttt{*.gpr} files and quantile-normalized with the function
+\texttt{normalizeBetweenArrays} from \textsf{R}'s \textsf{limma} package.
+Quantile normalization normalizes expression measure distributions across all
+arrays.  All arrays were processed as a single batch.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,629 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[colorlinks=true,linkcolor=blue,pagecolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+\usepackage{siunitx}
+
+\title{Reanalysis of GSE9893--breast}
+\author{Gil Tom\'{a}s and Vincent Detours\\
+  % {\tt vdetours@ulb.ac.be}\\
+  \textsc{IRIBHM---ULB}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+
+\section{GSE9893-breast}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library} \hlstd{(ProjectTemplate)}
+\hlkwd{load.project} \hlstd{()}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Here we focus on the data-set \textsf{GSE9893-breast}, comprising 155 samples of
+tamoxifen-treated primary breast cancers.  These samples were hybridized on an
+homemade \mbox{70-mer} chip containing \SI{22680} probes, mapping to \SI{21329}
+human specific genes.  The original experiment was carried out to look for a
+gene expression signature to predict the recurrence of tamoxifen-treated primary
+breast cancer.
+
+With this reanalysis, we aim to quantify the effect of a normalization artifact
+in prognostic content.  The data-set was downloaded from
+\href{http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9893}{\textsc{geo}}
+with the \texttt{GEOquery} package, with original normalization.  The expression
+matrix was then feature collapsed using a maxSum routine and median polished
+(more details in \textsf{reports/supplementary-methods/supplementary.pdf}).
+
+The data-set can be loaded with the command:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{dset} \hlkwb{<-} \hlkwd{loadDset} \hlstd{(}\hlstr{"GSE9893-breast"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The expression matrix can be extracted as a \texttt{gct} list.  The survival
+event considered in this analysis is overall survival, found encoded in the
+\texttt{pheno} data frame as an object of class survival:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## expression matrix}
+\hlstd{gct} \hlkwb{<-} \hlstd{dset}\hlopt{$}\hlstd{gct}
+\hlkwd{str} \hlstd{(gct)}
+\end{alltt}
+\begin{verbatim}
+## List of 2
+##  $ row.descriptions: chr [1:15762] "A1BG" "A1BG-AS1" "A1CF" "A2M" ...
+##  $ data            : num [1:15762, 1:155] 2.38 1.08 -1.06 6.03 -5.43 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:15762] "3125" "2492" "9401" "951" ...
+##   .. ..$ : chr [1:155] "GSM249296" "GSM249524" "GSM249527" "GSM249529" ...
+\end{verbatim}
+\begin{alltt}
+\hlcom{## survival object}
+\hlstd{os} \hlkwb{<-} \hlstd{dset}\hlopt{$}\hlstd{pheno}\hlopt{$}\hlstd{os}
+\hlkwd{head} \hlstd{(os)}
+\end{alltt}
+\begin{verbatim}
+## [1] 26.2  68.5  55.5  44.8  99.9+ 57.4
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Figure~\ref{fig:plot-event-distribution} shows a visual representation of the
+distribution of events (death in red, censored in black), across the 14 years
+spanned by the study.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
+
+{\centering \includegraphics[width=\maxwidth]{figures/plot-event-distribution-1} 
+
+}
+
+\caption[Distribution of survival events in GSE9893 (red]{Distribution of survival events in GSE9893 (red: deceased event; black: censored event)\label{fig:plot-event-distribution}}
+\end{figure}
+
+
+\end{knitrout}
+
+Among the 114 studies assayed in our analysis, \textsf{GSE9893-breast} is the
+one with the highest fraction of genes associated with outcome at a
+\emph{p-}value of 0.05 (prognostic fraction, as computed by the script
+\textsf{munge/compute-frac-genes-signif.R}):
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{(}\hlkwd{frac.signif.pval} \hlstd{(}\hlkwc{gct} \hlstd{= gct,}
+                   \hlkwc{s} \hlstd{= os))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.5943408
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Intriguingly, nearly all MSigDB C2 signatures appear associated with outcome in
+this data-set.  Table~\ref{tab:prognostic-fraction-table} shows the top six
+studies with highest fraction of MSigDB C2 signatures associated with outcome,
+as computed by the script \textsf{munge/compute-frac-signif.R}.
+
+
+% Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Fri, Jan 16, 2015 - 14:37:01
+\begin{table}[!htbp] \centering 
+  \caption{Top six studies with highest fraction of MSigDB C2 signatures associated with outcome} 
+  \label{tab:prognostic-fraction-table} 
+\begin{tabular}{@{\extracolsep{5pt}} ccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Study & Fraction Significant Tests & Event \\ 
+\hline \\[-1.8ex] 
+GSE9893-breast & $0.958$ & os \\ 
+GSE10846-lymphoma & $0.856$ & os \\ 
+GSE32894-bladder & $0.847$ & dss \\ 
+GSE31210-lung-adenocarcinoma & $0.838$ & dfs \\ 
+KIRC & $0.821$ & os \\ 
+GSE41258-colon & $0.814$ & dss \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+
+\section{Signal/Noise quality metric}
+The \texttt{qualStudy} function of the \texttt{SNAGEE} package computes a
+signal/noise quality metric based on gene-gene correlations across expression
+profiles.  The following code computes this metric for all data-sets in our
+study.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## loads studies.dfr}
+\hlstd{studies.dfr} \hlkwb{<-} \hlkwd{read.csv2} \hlstd{(}\hlstr{"data/csv/studies.csv"}\hlstd{,} \hlkwc{stringsAsFactors} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+
+\hlstd{allStudies} \hlkwb{<-} \hlstd{studies.dfr}\hlopt{$}\hlstd{study}
+\hlkwd{system.time} \hlstd{(studiesSNQual} \hlkwb{<-} \hlkwd{laply} \hlstd{(allStudies, computeQualStudy))}
+\end{alltt}
+\begin{verbatim}
+##     user   system  elapsed 
+## 1182.048   24.135 1217.687
+\end{verbatim}
+\begin{alltt}
+\hlkwd{names} \hlstd{(studiesSNQual)} \hlkwb{<-} \hlstd{allStudies}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Figure~\ref{fig:plot-qual-study} shows the distribution of the values computed
+for this metric across all 114 data-sets compiled in this analysis.  The value
+computed for \textsf{\mbox{GSE9893-breast}} is shown in red.  According to the
+vignette of the \texttt{SNAGEE} package (accessed by evaluating the command
+\texttt{browseVignettes (``SNAGEE'')}):
+
+\begin{quote}
+  The SNR [signal-to-noise ratio] of a study is based on the correlation between
+  its gene-gene correlation matrix and the expected matrix, and so is a number
+  between $-1$ and 1.  Practically, numbers near or below 0 are symptomatic of
+  seriously problematic studies (e.g. gene annotation problems, serious
+  normalization issues).  Numbers around 20-30\% are average, depending on the
+  platform.
+\end{quote}
+
+\pagebreak
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
+
+{\centering \includegraphics[width=\maxwidth]{figures/plot-qual-study-1} 
+
+}
+
+\caption[Distribution of Signal/Noise quality metrics]{Distribution of Signal/Noise quality metrics.  The value in red corresponds to GSE9893-breast\label{fig:plot-qual-study}}
+\end{figure}
+
+
+\end{knitrout}
+
+The quality metric observed for \textsf{GSE9893-breast} is:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{studiesSNQual[}\hlstr{"GSE9893-breast"}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+## GSE9893-breast 
+##      0.1487177
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section{Demonstration of the batch effect and its consequences}
+
+The following code loads and cleans the descriptor file \textsf{GSE9893-gpr.csv}.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## reads and cleans GSE9893-gpr.csv}
+\hlstd{gpr.dfr} \hlkwb{<-} \hlkwd{read.csv2} \hlstd{(}\hlstr{"data/raw-data-reanalysis-GSE9893/GSE9893-gpr.csv"}\hlstd{)}
+\hlkwd{colnames} \hlstd{(gpr.dfr)} \hlkwb{<-} \hlkwd{sapply} \hlstd{(gpr.dfr[}\hlnum{1}\hlstd{, ], gsub,}
+                              \hlkwc{pattern} \hlstd{=} \hlstr{"^(.*)=(.*)"}\hlstd{,}
+                              \hlkwc{replacement} \hlstd{=} \hlstr{"\textbackslash{}\textbackslash{}1"}\hlstd{)}
+\hlkwd{colnames} \hlstd{(gpr.dfr)[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstr{"gsm"}
+\hlstd{gpr.dfr}\hlopt{$}\hlstd{gsm} \hlkwb{<-} \hlkwd{gsub} \hlstd{(}\hlstr{".gpr"}\hlstd{,} \hlstr{""}\hlstd{, gpr.dfr}\hlopt{$}\hlstd{gsm)}
+\hlcom{## removes constant variables}
+\hlstd{gpr.dfr} \hlkwb{<-} \hlstd{gpr.dfr[}\hlkwd{sapply} \hlstd{(gpr.dfr,} \hlkwa{function} \hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{length} \hlstd{(}\hlkwd{unique} \hlstd{(x))} \hlopt{>} \hlnum{1}\hlstd{)]}
+\hlcom{## to data table}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlkwd{data.table} \hlstd{(gpr.dfr,} \hlkwc{key} \hlstd{=} \hlstr{"gsm"}\hlstd{)}
+\hlcom{## reorders according to dset$pheno}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[}\hlkwd{rownames} \hlstd{(dset}\hlopt{$}\hlstd{pheno)]}
+\hlcom{## whenever appropriate, removes everything before '=' (included) from each column}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[,} \hlkwd{lapply} \hlstd{(.SD, gsub,} \hlkwc{pattern} \hlstd{=} \hlstr{"^(.*)=(.*)"}\hlstd{,} \hlkwc{replacement} \hlstd{=} \hlstr{"\textbackslash{}\textbackslash{}2"}\hlstd{)]}
+\hlcom{## transform variables to numeric}
+\hlstd{numVar} \hlkwb{<-} \hlkwd{c} \hlstd{(}\hlstr{"Temperature"}\hlstd{,} \hlstr{"PMTGain"}\hlstd{,} \hlstr{"ScanPower"}\hlstd{,} \hlstr{"LaserPower"}\hlstd{)}
+\hlkwa{for} \hlstd{(j} \hlkwa{in} \hlstd{numVar)} \hlkwd{set} \hlstd{(gpr.dtb,} \hlkwc{j} \hlstd{= j,} \hlkwc{value} \hlstd{=} \hlkwd{as.numeric} \hlstd{(gpr.dtb[[j]]))}
+\hlcom{## creates new variable defined by the presence of the string 'bordeaux' in the}
+\hlcom{## 'Settings' variable}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[, Bordeaux} \hlkwb{:=} \hlkwd{grepl} \hlstd{(}\hlstr{"bordeaux"}\hlstd{, Settings)]}
+\hlcom{## creates new variable by extracting the series number referenced in the}
+\hlcom{## variable 'ImageFiles'}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[, Series} \hlkwb{:=} \hlkwd{gsub} \hlstd{(}\hlstr{".*rie[[:space:]]*([0-9]+).*"}\hlstd{,} \hlstr{"\textbackslash{}\textbackslash{}1"}\hlstd{, ImageFiles)]}
+\hlstd{gpr.dtb}\hlopt{$}\hlstd{Series} \hlkwb{<-} \hlkwd{as.numeric} \hlstd{(gpr.dtb}\hlopt{$}\hlstd{Series)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Notice that arrays were scanned within two discrete time intervals:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[, Date} \hlkwb{:=} \hlkwd{as.Date} \hlstd{(DateTime,} \hlstr{"%Y/%m/%d"}\hlstd{)]}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[, Time} \hlkwb{:=} \hlkwd{as.numeric} \hlstd{(Date)]}
+\hlstd{gpr.dtb} \hlkwb{<-} \hlstd{gpr.dtb[, Year} \hlkwb{:=} \hlkwd{as.numeric} \hlstd{(}\hlkwd{gsub} \hlstd{(}\hlstr{"^([0-9]+)-(.*)"}\hlstd{,} \hlstr{"\textbackslash{}\textbackslash{}1"}\hlstd{, Date))]}
+
+\hlkwd{with} \hlstd{(gpr.dtb,} \hlkwd{hist} \hlstd{(Time} \hlopt{-} \hlkwd{min} \hlstd{(Time),}
+                     \hlkwc{breaks} \hlstd{=} \hlnum{50}\hlstd{,}
+                     \hlkwc{main} \hlstd{=} \hlstr{""}\hlstd{,}
+                     \hlkwc{xlab} \hlstd{=} \hlstr{"Scan date [days]"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/array-dates-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Non-incidentally, scan dates are shown to be associated with overall survival:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{summary} \hlstd{(}\hlkwd{coxph} \hlstd{(os} \hlopt{~} \hlstd{gpr.dtb}\hlopt{$}\hlstd{Time))}
+\end{alltt}
+\begin{verbatim}
+## Call:
+## coxph(formula = os ~ gpr.dtb$Time)
+## 
+##   n= 155, number of events= 42 
+## 
+##                  coef exp(coef) se(coef)     z Pr(>|z|)    
+## gpr.dtb$Time 0.007427  1.007454 0.001376 5.396 6.82e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##              exp(coef) exp(-coef) lower .95 upper .95
+## gpr.dtb$Time     1.007     0.9926     1.005      1.01
+## 
+## Concordance= 0.725  (se = 0.049 )
+## Rsquare= 0.204   (max possible= 0.913 )
+## Likelihood ratio test= 35.38  on 1 df,   p=2.711e-09
+## Wald test            = 29.12  on 1 df,   p=6.817e-08
+## Score (logrank) test = 38.74  on 1 df,   p=4.842e-10
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary} \hlstd{(}\hlkwd{coxph} \hlstd{(os} \hlopt{~} \hlstd{gpr.dtb}\hlopt{$}\hlstd{Year))}
+\end{alltt}
+\begin{verbatim}
+## Call:
+## coxph(formula = os ~ gpr.dtb$Year)
+## 
+##   n= 155, number of events= 42 
+## 
+##                coef exp(coef) se(coef)    z Pr(>|z|)    
+## gpr.dtb$Year 1.9914    7.3257   0.3641 5.47  4.5e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##              exp(coef) exp(-coef) lower .95 upper .95
+## gpr.dtb$Year     7.326     0.1365     3.589     14.95
+## 
+## Concordance= 0.746  (se = 0.038 )
+## Rsquare= 0.211   (max possible= 0.913 )
+## Likelihood ratio test= 36.82  on 1 df,   p=1.295e-09
+## Wald test            = 29.92  on 1 df,   p=4.502e-08
+## Score (logrank) test = 40.72  on 1 df,   p=1.759e-10
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot} \hlstd{(}\hlkwd{survfit} \hlstd{(os} \hlopt{~} \hlstd{gpr.dtb}\hlopt{$}\hlstd{Year),}
+      \hlkwc{xlab} \hlstd{=} \hlstr{"Time [months]"}\hlstd{,}
+      \hlkwc{ylab} \hlstd{=} \hlstr{"Survival"}\hlstd{,}
+      \hlkwc{col} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/scan-date-outcome-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Notice the massive batch effect associated with the variable
+\texttt{gpr.dtb\$Year}:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pcaRes} \hlkwb{<-} \hlkwd{prcomp} \hlstd{(}\hlkwd{t} \hlstd{(gct}\hlopt{$}\hlstd{data))}
+
+\hlkwd{plot} \hlstd{(pcaRes)}
+
+\hlstd{pt} \hlkwb{<-} \hlkwd{rep} \hlstd{(}\hlnum{1}\hlstd{,} \hlkwd{nrow} \hlstd{(gct}\hlopt{$}\hlstd{data))}
+\hlstd{pt[dset}\hlopt{$}\hlstd{pheno}\hlopt{$}\hlstd{status} \hlopt{==} \hlstr{"RF"}\hlstd{]} \hlkwb{<-} \hlnum{3}
+\hlstd{col} \hlkwb{<-} \hlkwd{rep} \hlstd{(}\hlstr{"black"}\hlstd{,} \hlkwd{nrow} \hlstd{(gct}\hlopt{$}\hlstd{data))}
+\hlstd{col[gpr.dtb}\hlopt{$}\hlstd{Year} \hlopt{==} \hlstr{"2006"}\hlstd{]} \hlkwb{<-} \hlstr{"red"}
+\hlkwd{plot} \hlstd{(pcaRes}\hlopt{$}\hlstd{x[,} \hlnum{1}\hlstd{], pcaRes}\hlopt{$}\hlstd{x[,} \hlnum{2}\hlstd{],} \hlkwc{col} \hlstd{= col,} \hlkwc{pch} \hlstd{= pt,}
+      \hlkwc{xlab} \hlstd{=} \hlkwd{paste} \hlstd{(}\hlstr{"PC1 ("}\hlstd{,} \hlkwd{round} \hlstd{(}\hlnum{100} \hlopt{*} \hlstd{pcaRes}\hlopt{$}\hlstd{sdev[}\hlnum{1}\hlstd{]} \hlopt{^} \hlnum{2} \hlopt{/} \hlkwd{sum} \hlstd{(pcaRes}\hlopt{$}\hlstd{sdev} \hlopt{^} \hlnum{2}\hlstd{),}
+          \hlkwc{d} \hlstd{=} \hlnum{1}\hlstd{),} \hlstr{"%)"}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{""}\hlstd{),}
+      \hlkwc{ylab} \hlstd{=} \hlkwd{paste} \hlstd{(}\hlstr{"PC2 ("}\hlstd{,} \hlkwd{round} \hlstd{(}\hlnum{100} \hlopt{*} \hlstd{pcaRes}\hlopt{$}\hlstd{sdev[}\hlnum{2}\hlstd{]} \hlopt{^} \hlnum{2} \hlopt{/} \hlkwd{sum} \hlstd{(pcaRes}\hlopt{$}\hlstd{sdev} \hlopt{^} \hlnum{2}\hlstd{),}
+          \hlkwc{d} \hlstd{=} \hlnum{1}\hlstd{),} \hlstr{"%)"}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{""}\hlstd{),}
+      \hlkwc{cex} \hlstd{=} \hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/batch-effect-scan-year-1} 
+\includegraphics[width=\maxwidth]{figures/batch-effect-scan-year-2} 
+
+}
+
+
+
+\end{knitrout}
+
+The batch effect is also visible from the array-wise gene expression
+distributions:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{boxplot} \hlstd{(gct}\hlopt{$}\hlstd{data,}
+         \hlkwc{range} \hlstd{=} \hlnum{0}\hlstd{,}
+         \hlkwc{col} \hlstd{= col,}
+         \hlkwc{xlab} \hlstd{=} \hlstr{"Samples"}\hlstd{,}
+         \hlkwc{ylab} \hlstd{=} \hlstr{"Expression"}\hlstd{,}
+         \hlkwc{pch} \hlstd{=} \hlstr{"."}\hlstd{,}
+         \hlkwc{lwd} \hlstd{=} \hlnum{0.5}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/array-expression-distribution-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\section{Re-normalization from raw-data}
+
+We downloaded the raw gpr files from \textsc{geo} and re-normalized them with
+the Bioconductor package \textsf{limma}.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## reads gpr files (these are one-color arrays scans)}
+\hlstd{gpr.dir} \hlkwb{<-} \hlstr{"data/raw-data-reanalysis-GSE9893/GSE9893-gpr"}
+\hlstd{gpr.files} \hlkwb{<-} \hlkwd{file.path} \hlstd{(gpr.dir,} \hlkwd{list.files} \hlstd{(gpr.dir))}
+
+\hlstd{ff} \hlkwb{<-} \hlkwa{function} \hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{as.numeric}\hlstd{(x}\hlopt{$}\hlstd{Flags} \hlopt{> -}\hlnum{99}\hlstd{)}
+\hlstd{Cy5} \hlkwb{<-} \hlstr{"F635 Mean"} \hlcom{# fools limma to read single clolor genepix file}
+\hlstd{RG} \hlkwb{<-} \hlkwd{read.maimages} \hlstd{(gpr.files,} \hlkwc{source} \hlstd{=} \hlstr{"genepix.median"}\hlstd{,}
+                     \hlkwc{wt.fun} \hlstd{= ff,}
+                     \hlkwc{columns} \hlstd{=} \hlkwd{list} \hlstd{(}\hlkwc{R} \hlstd{= Cy5,} \hlkwc{G} \hlstd{= Cy5),}
+                     \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{RG}\hlopt{$}\hlstd{G} \hlkwb{<-} \hlkwa{NULL}
+
+\hlcom{## quantile-nomalize arrays}
+\hlstd{norm} \hlkwb{<-} \hlkwd{normalizeBetweenArrays} \hlstd{(RG}\hlopt{$}\hlstd{R,} \hlkwc{method} \hlstd{=} \hlstr{"quantile"}\hlstd{)}
+\hlstd{norm} \hlkwb{<-} \hlkwd{log2} \hlstd{(norm)}
+
+\hlcom{## reorder columns}
+\hlkwd{colnames} \hlstd{(norm)} \hlkwb{<-} \hlkwd{gsub} \hlstd{(}\hlstr{"(.*)/(.*)$"}\hlstd{,} \hlstr{"\textbackslash{}\textbackslash{}2"}\hlstd{,} \hlkwd{colnames} \hlstd{(norm))}
+\hlstd{norm} \hlkwb{<-} \hlstd{norm[,} \hlkwd{colnames} \hlstd{(gct}\hlopt{$}\hlstd{data)]}
+
+\hlcom{## gene-wise average}
+\hlstd{norm} \hlkwb{<-} \hlkwd{aggregate} \hlstd{(norm,} \hlkwc{by} \hlstd{=} \hlkwd{list} \hlstd{(RG}\hlopt{$}\hlstd{genes}\hlopt{$}\hlstd{Name), mean)}
+\hlkwd{rownames} \hlstd{(norm)} \hlkwb{<-} \hlstd{norm[,} \hlnum{1}\hlstd{]}
+\hlstd{norm} \hlkwb{<-} \hlkwd{as.matrix} \hlstd{(norm[,} \hlopt{-}\hlnum{1}\hlstd{])}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+No longer does the first principal component underlines such a pronounced batch
+effect:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pcaResNorm} \hlkwb{<-} \hlkwd{prcomp} \hlstd{(}\hlkwd{t} \hlstd{(norm))}
+\hlkwd{plot} \hlstd{(pcaResNorm)}
+
+\hlkwd{plot} \hlstd{(pcaResNorm}\hlopt{$}\hlstd{x[,} \hlnum{1}\hlstd{],}
+      \hlstd{pcaResNorm}\hlopt{$}\hlstd{x[,}\hlnum{2}\hlstd{],}
+      \hlkwc{col} \hlstd{= col,} \hlkwc{pch} \hlstd{= pt,}
+      \hlkwc{xlab} \hlstd{=} \hlkwd{paste} \hlstd{(}\hlstr{"PC1 ("}\hlstd{,} \hlkwd{round} \hlstd{(}\hlnum{100} \hlopt{*} \hlstd{pcaResNorm}\hlopt{$}\hlstd{sdev[}\hlnum{1}\hlstd{]} \hlopt{^} \hlnum{2} \hlopt{/} \hlkwd{sum} \hlstd{(pcaResNorm}\hlopt{$}\hlstd{sdev} \hlopt{^} \hlnum{2}\hlstd{),}
+          \hlkwc{d} \hlstd{=} \hlnum{1}\hlstd{),} \hlstr{"%)"}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{""}\hlstd{),}
+      \hlkwc{ylab} \hlstd{=} \hlkwd{paste} \hlstd{(}\hlstr{"PC2 ("}\hlstd{,} \hlkwd{round} \hlstd{(}\hlnum{100} \hlopt{*} \hlstd{pcaResNorm}\hlopt{$}\hlstd{sdev[}\hlnum{2}\hlstd{]} \hlopt{^} \hlnum{2} \hlopt{/} \hlkwd{sum} \hlstd{(pcaResNorm}\hlopt{$}\hlstd{sdev} \hlopt{^} \hlnum{2}\hlstd{),}
+          \hlkwc{d} \hlstd{=} \hlnum{1}\hlstd{),} \hlstr{"%)"}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{""}\hlstd{))}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/batch-effect-post-renorm-1} 
+\includegraphics[width=\maxwidth]{figures/batch-effect-post-renorm-2} 
+
+}
+
+
+
+\end{knitrout}
+
+Obviously, array expression distribution is now identical:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{boxplot} \hlstd{(norm,}
+         \hlkwc{range} \hlstd{=} \hlnum{0}\hlstd{,}
+         \hlkwc{col} \hlstd{= col,}
+         \hlkwc{xlab} \hlstd{=} \hlstr{"Samples"}\hlstd{,}
+         \hlkwc{ylab} \hlstd{=} \hlstr{"Expression"}\hlstd{,}
+         \hlkwc{pch} \hlstd{=} \hlstr{"."}\hlstd{,}
+         \hlkwc{lwd} \hlstd{=} \hlnum{0.5}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/array-expression-distribution-post-renorm-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Concomitantly, prognostic fraction in \textsf{GSE9893-breast} is sharply
+reduced:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{norm.gct} \hlkwb{<-} \hlkwd{list} \hlstd{(}\hlkwc{row.descriptions} \hlstd{=} \hlkwd{rownames} \hlstd{(norm),}
+                  \hlkwc{data} \hlstd{= norm)}
+
+\hlstd{(}\hlkwd{frac.signif.pval} \hlstd{(}\hlkwc{gct} \hlstd{= norm.gct,}
+                   \hlkwc{s} \hlstd{= os))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1860826
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Yet, the signal/noise quality metric is improved and now within the IQR range of
+the surveyed data-sets:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{(GSE9893NormSNQual} \hlkwb{<-} \hlkwd{qualStudy} \hlstd{(}\hlkwd{gct2qualStudy} \hlstd{(norm.gct)))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.3383042
+\end{verbatim}
+\begin{alltt}
+\hlkwd{quantile} \hlstd{(studiesSNQual,} \hlkwd{c} \hlstd{(}\hlnum{0.25}\hlstd{,} \hlnum{0.75}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+##       25%       75% 
+## 0.3198307 0.4861230
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Figure~\ref{fig:plot-hist-qual-study} revisits the distribution of
+signal-to-noise quality metrics across all studies.  The black vertical line
+marks the quality registered for \textsf{GSE9893-breast} with original
+normalization.  The red vertical line marks the new quality metric computed
+post-re-normalization.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
+
+{\centering \includegraphics[width=\maxwidth]{figures/plot-hist-qual-study-1} 
+
+}
+
+\caption[Distribution of Signal/Noise quality metrics]{Distribution of Signal/Noise quality metrics. Black line: GSE9893-breast with original normalization; red line: GSE9893-breast post-re-normalization\label{fig:plot-hist-qual-study}}
+\end{figure}
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sessionInfo} \hlstd{()}
+\end{alltt}
+\begin{verbatim}
+## R version 3.1.2 (2014-10-31)
+## Platform: x86_64-apple-darwin13.4.0 (64-bit)
+## 
+## locale:
+## [1] C
+## 
+## attached base packages:
+##  [1] stats4    splines   parallel  stats     graphics  grDevices
+##  [7] utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] knitr_1.8             org.Hs.eg.db_3.0.0    limma_3.22.1         
+##  [4] stargazer_5.1         SNAGEE_1.6.0          SNAGEEdata_1.1.1     
+##  [7] MASS_7.3-35           qvalue_1.40.0         MicroarrayToolbox_0.5
+## [10] AnnotationDbi_1.28.1  GenomeInfoDb_1.2.4    IRanges_2.0.1        
+## [13] S4Vectors_0.4.0       RSQLite_1.0.0         DBI_0.3.1            
+## [16] survival_2.37-7       impute_1.40.0         doMC_1.3.3           
+## [19] iterators_1.0.7       foreach_1.4.2         pcaMethods_1.56.0    
+## [22] Rcpp_0.11.3           Biobase_2.26.0        BiocGenerics_0.12.1  
+## [25] amap_0.8-14           ggplot2_1.0.0         plyr_1.8.1           
+## [28] reshape2_1.4.1        data.table_1.9.4      ProjectTemplate_0.6  
+## 
+## loaded via a namespace (and not attached):
+##  [1] GO.db_3.0.0        RColorBrewer_1.1-2 XML_3.98-1.1      
+##  [4] annotate_1.44.0    chron_2.3-45       codetools_0.2-9   
+##  [7] colorspace_1.2-4   compiler_3.1.2     digest_0.6.8      
+## [10] evaluate_0.5.5     formatR_1.0        grid_3.1.2        
+## [13] gtable_0.1.2       highr_0.4          labeling_0.3      
+## [16] munsell_0.4.2      proto_0.3-10       samr_2.0          
+## [19] scales_0.2.4       stringr_0.6.2      tools_3.1.2       
+## [22] xtable_1.7-4
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\end{document}
