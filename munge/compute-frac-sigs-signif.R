@@ -41,7 +41,7 @@ computeFracSignif <- function (study,
     }
     ## loops over list of events
     allOut.lst <- lapply (events, function (event) {
-        surv = dset$pheno[[event]]
+        surv <- dset$pheno[[event]]
         ## defines res.lst
         res.lst <- list ()
         ## computes logRankTests for all MSigDB C2 signatures
@@ -92,17 +92,10 @@ studies.dfr <- read.csv2 ("data/csv/studies.csv")
 ##                                       computeFracSignif,
 ##                                       print.token = TRUE))
 
-system.time (fracSignifDiscretePC1.dfr <- ldply (studies.dfr$study,
-                                                 computeFracSignif,
-                                                 discrete.pc1 = TRUE,
-                                                 print.token = TRUE))
-
-## system.time (fracSignif.lst <- llply (studies.dfr$study,
-##                                       computeFracSignif,
-##                                       return.all.tests = TRUE,
-##                                       print.token = TRUE))
+system.time (fracSignif.dfr <- llply (studies.dfr$study,
+                                      computeFracSignif,
+                                      return.all.tests = TRUE,
+                                      print.token = TRUE))
 
 ## * Caches results
-## ProjectTemplate:::cache ("fracSignif.lst")
-## ProjectTemplate:::cache ("fracSignif.dfr")
-ProjectTemplate:::cache ("fracSignifDiscretePC1.dfr")
+ProjectTemplate:::cache ("fracSignif.dfr")
