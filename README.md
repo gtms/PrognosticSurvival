@@ -38,7 +38,7 @@ this file.  If not, see <http://www.gnu.org/licenses/>.
 ## Install
 
 Prior requirements to the running of this software include a working R
-(version>=3.0) and TeX installations.  Furthermore, R packages described in the
+(version>=3.1.2) and TeX installations.  Furthermore, R packages described in the
 file `config/global.dcf` are also expected to be found in your system.  In
 addition, the CRAN R package ProjectTemplate (version>=0.6) and
 MicroarrayToolbox (available on <http://github.com/gtms/MicroarrayToolbox>) must
