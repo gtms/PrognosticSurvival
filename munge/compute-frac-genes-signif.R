@@ -1,5 +1,7 @@
 ## Computes fraction of MSigDB C2 signatures associated with outcome
 ## across all studies.
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## * Preamble
 library (ProjectTemplate)

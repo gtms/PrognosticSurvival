@@ -1,4 +1,6 @@
 ## This script knits the pdf for the supplementaryreanalysis of GSE9893-breast
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 library (knitr)
 

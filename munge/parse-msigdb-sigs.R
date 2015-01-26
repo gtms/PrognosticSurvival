@@ -1,4 +1,6 @@
-## Parse MSigDB C2 signatures
+## Parses MSigDB C2 signatures
+## Gil Tomás, IRIBHM - ULB
+## gil.tomas@ulb.ac.be
 
 ## * Preamble
 library (ProjectTemplate)
