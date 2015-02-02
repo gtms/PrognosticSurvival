@@ -1,7 +1,5 @@
 ## Computes fraction of MSigDB C2 signatures associated with outcome
 ## across all studies.
-## Gil Tomás, IRIBHM - ULB
-## gil.tomas@ulb.ac.be
 
 ## * Preamble
 library (ProjectTemplate)
@@ -53,9 +51,10 @@ computeFracGenesSignif <- function (study,
     if (is.null (nCores)) {
         nCores <- detectCores ()
     }
-    ## entry token
+    ## token
     if (print.token) {
         message (sprintf ("Now doing %s . . . ", study), appendLF = FALSE)
+        on.exit (message (sprintf ("%s done!", study)))
     }
     ## loads study
     dset <- loadDset (study)
@@ -83,15 +82,10 @@ computeFracGenesSignif <- function (study,
         list (fracGenesSignif = extractFracSignif (.SD)),
         by = event]
     fracGenesSignif.dtb[, study := study]
-    ## exit token
-    if (print.token) {
-        message (sprintf ("%s done!\n", study))
-    }
     ## return
-    list (logRanktests = logRankTests.dtb,
+    list (logRankTests = logRankTests.dtb,
           fracGenesSignif = fracGenesSignif.dtb)
 }
-
 
 ## * Reads in data
 ## ** reads in studies.csv2
