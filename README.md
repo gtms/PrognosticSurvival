@@ -6,7 +6,7 @@ association with outcome is not biologically informative".
 
 Author: Gil Tomás <gil.tomas@ulb.ac.be>
 
-URL: <https://owncloud.ulb.ac.be/public.php?service=files&t=506a90a16b44d0e8050f2e991b70c7d8>
+URL: <https://owncloud.ulb.ac.be/index.php/s/iAleeNNQ7adenTM>
 
 
 ## Contents
